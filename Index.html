@@ -1,579 +1,287 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>CRASH DEMO</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ZYXEL Wifi-Zones</title>
 </head>
-
 <style>
-   :root{
-    --bg:#071025;
-    --card:#0f1724;
-    --accent:#7c4dff;
-    --danger:#ff4d4f;
-    --ok:#22c55e;
-    --muted:rgba(255,255,255,0.7);
-   }
-    *{box-sizing:border-box}
-    body{
-    margin:0;
-    display:flex;
-    align-items:center;
-    font-family:Inter,system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-    background:linear-gradient(180deg,var(--bg), #020617 90%);
-    color:white;
-    padding:10px;
+:root {
+    --bg: #0f1724;
+    --card: #0b1220;
+    --muted: #aab1c6;
+    --text: #f7f9fc;
+    --primary: #7c4dff;
+    --primary-2: #40c4ff;
+}
+    * {
+        box-sizing: border-box
     }
-    h3 span{
-    opacity: 0.7;
-    font-family: bold;
-    font-weight: 900;
-    padding: 6px;
-    font-size: 22px;
-    color: red;
-    display: grid;
-    width: 420%;
-    border-radius: 6px;
-    height: 40px;
-    background: #020617;
+    body {
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: white;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #0b1220;
+        line-height: 0.9;
     }
-    .wrap{
-    width:100%;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:14px;
-    padding:18px;
-    display:grid;
-    grid-template-columns: 320px 1fr;
-    gap:16px;
-    box-shadow: 0 20px 60px rgba(2,6,23,0.7);
-    border:1px solid rgba(255,255,255,0.03);
+    .page {
+        display: none;
+        padding: 15px;
     }
-
-  /* panneau gauche: contrôles */
-    .panel{
-    padding:14px;
-    border-radius:10px;
-    background:rgba(255,255,255,0.02);
+    .active {
+        display: block;
     }
-    .title{ 
-    font-size:18px; 
-    font-weight:700;
-    margin:4px 0 10px 
+    .login {
+        margin-top: 20%;
+        max-width: 920px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(55, 77, 175, 0.7);
+        opacity: 0.8;
     }
-   .row{ 
-    display:flex; 
-    gap:8px;
-    align-items:center; 
-    margin-bottom:10px;
+    .visual {
+        position: relative;
+        min-height: 300px;
+        place-items: center;
     }
-    .case{
-    display:flex; 
-    align-items:center; 
-    margin-bottom:10px;
-    border-radius: 12px;;
+    .visual .stamp {
+        width: 210px;
+        height: auto;
+        filter: drop-shadow(0 18px 40px rgba(64,196,255,.25));
     }
-    label{ font-size:13px; color:var(--muted); min-width:100px }
-    input[type="number"], input[type="text"]{
-    background:transparent; border:1px solid rgba(255,255,255,0.06); color:white; padding:8px 10px; border-radius:8px; width:100%;
+    .visual p {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+        opacity: .8;
     }
-    .big{
-    font-size:18px; 
-    font-weight:700; 
-    color:#66BB6A;
-    opacity: 0.7;
-    border-radius:10px; 
-    margin-left: 10%;
+    .form {
+        padding: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        background: var(--card);
     }
-    button{
-    padding:10px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:700;
-    }
-    .btn-start{ background: linear-gradient(90deg,var(--accent), #5aa8ff); margin:5px; color: white; box-shadow: 0 10px 30px rgba(124,77,255,0.12) }
-    .btn-cash{ background: linear-gradient(90deg,var(--ok), #60d394);margin: 5px; color:#022; min-width:140px }
-    .btn-disabled{ opacity:0.45;color: white; cursor:not-allowed }
-
-    .small{ font-size:13px; color:var(--muted) }
-
-    /* panneau droit: jeu & avion */
-    .game{
-    padding:14px;
-    border-radius:10px;
-    background:linear-gradient(180deg, rgba(0,0,0,0.2), rgba(255,255,255,0.01));
-    display:flex; 
-    flex-direction:column;
-    gap:5px; 
-    align-items:stretch;
-    }
-    .hud{
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .mult{
-    margin: 54px;
-    color: #66BB6A;
-    text-align: center;
-    font-size:40px; 
-    font-weight:900; 
-    letter-spacing:0.02em;
-    }
-    .status{
-    font-size:12px; 
-    color:var(--muted) }
-
-    /* zone animation avion */
-    h4{
-    margin: -5px;
-    padding: 8px;
-    font-size: 16px;
-    background: #FF8F00;
-    height: 32px;
-    text-align: center;
-    }
-    h5{
-    margin: 5px;
-    }
-    .sky{
-    height:200px;
-    background: linear-gradient(180deg,#06213d 0%, #051428 100%);
-    border-radius:12px;
-    position:relative;
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,0.03);
-    }
-   .small{
-    font-size: 10px;
-    }
-    .plane{
-    width:84px; 
-    height:48px; 
-    position:absolute; 
-    left:0px; bottom:0px;
-    transition: transform 2s ease, opacity .6s ease;
-    transform-origin:center;
-    font-size: 70px;
-    display: inline-block;
-    transform: rotate(-30deg);
-    }
-    .plane.taking-off{
-    transform: translate(240px, -140px) rotate(-40deg) scale(0.95);
-    transition: transform 40s cubic-bezier(.2,.9,.22,1);
-    }
-    .plane.crashed{
-    transform: translate(220px, 35px) rotate(40deg) scale(1.05);
-    opacity:0.18;
+    .sub {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+        text-align: center;
+        font-size: 14px;
     }
 
-    /* nuages / traces */
-    .trail{
-    position:absolute;
-    left:70px;
-    bottom:80px;
-    margin: -80px;
-    height:6px;
-    width:0px; 
-    background:linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.08));
-    border-radius:4px; 
-    transition: width 5.7s linear;
+    .field {
+        display: flex;
+        align-items: center;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,.03);
+        border: 1.3px inset #40c4ff;
+        margin: 10px;
+    }
+    .field input {
+        appearance: none;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--text);
+        width: 100%;
+        font-size: 15px;
+    }
+    .icon {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        opacity: .9;
+    }
+    .btn {
+        margin-left: 1%;
+        width: 50%;
+        margin-top: 5%;
+        padding: 9px;
+        border: none;
+        border-radius: 7px;
+        font-size: 1.0rem;
+        font-weight: 500;
+        color: white;
+        background: linear-gradient(45deg, purple,blue);
+        cursor: pointer;
+        transition: 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -10px;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, ,transparent);
+        transition: 0.5s;
+    }
+    .btn:hover::before {
+        left: 100%;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    button::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: skewX(-30deg);
+        transition: left 0.5s;
+    }
+    button:hover::after {
+        left: 200%;
+    }
+    button:hover {
+        background: #e57373;
+        transform: scale(1.02);
+    }
+    .meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 13px;
     }
 
-    .meter {
-    width: 80%;
-    margin-left: 20%;
-    height:8px; background:rgba(255,255,255,0.04);
-    border-radius:6px;
-    overflow:hidden;
+@media (max-width:860px) {
+        .login {
+            grid-template-columns: 1fr
+        }
+        .visual {
+            display: none
+        }
     }
-    .meter .fill { 
-    height:100%;
-    width:0%; 
-    background:linear-gradient(90deg,var(--accent), #5aa8ff); 
-    transition: width .3s linear;
-    }
+    header svg {
+        margin-left: 15%;
 
-    .log{ 
-    font-size:13px; 
-    color:var(--muted); min-height:22px;
     }
-    /* messages couleurs */
-    .msg-ok{ 
-    color:var(--ok);
-    font-weight:700;
+    .contact h1 {
+        font-size: 12px;
+        color: #F06292;
+        text-align: center;
     }
-    .msg-bust{ 
-        color:var(--danger);
-        font-weight:800;
+    span {
+        color: white;
     }
-
-    /* footer instructions */
-    .kbd{ 
-        font-weight:700;
-        background:rgba(255,255,255,0.03);
-        padding:4px 6px; border-radius:6px;
-        font-size:13px;
-    }
-    @media(max-width:880px){
-    .wrap{ grid-template-columns: 1fr; }
-    }
-  
-    .notification {
-    position: fixed;
-    bottom: 20px;
-    right: 10px;
-    background: white;
-    border: 1px solid #ddd;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    animation:bounce 0.5s ease-in-out infinite;
-    z-index: 9999;
-    }
-    .notification-text {
-    flex: 1;
-    }
-    .notification-text h5 {
-    margin: 0;
-    font-size: 16px;
-    color: black;
-    }
-    .notification-text z {
-    margin: 3px 0 0;
-    font-size: 14px;
-    color: #555;
-    }
-    .notification-text span{
-    color: red;
-    opacity: 0.5;
-    }
-     @keyframes bounce {
-    0%, 100% { transform: translateY(0);}
-    50% {transform: translateY(-8px);}
 </style>
-
 <body>
-    <div class="game" role="region" aria-label="Zone de jeu">
-    <div class="case">
-        <h3><span>CRASH</span></h3>
 
-        <label></label>
-    <div class="big" id="balance">5000.00</div>
-        <h5>MGA</h5>
-    </div>
-    
-    <div class="hud">
-    <div>
-</div>
+    <!-- Sprite SVG réutilisable -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+        <!-- Icône "login" (flèche entrant une porte) -->
+        <symbol id="i-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5" />
+            <path d="M10 17l5-5-5-5" />
+            <path d="M15 12H3" />
+        </symbol>
 
-    <div style="display:flex; justify-content:space-between; margin-top:8px;">
-    </div>
-</div>
+        <!-- Utilisateur -->
+        <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21a8 8 0 0 0-16 0" />
+            <circle cx="12" cy="7" r="4" />
+        </symbol>
 
-    <div class="sky" id="sky">
-        <h4>CRASH DEMO</h4>
-    <div class="trail" id="trail" aria-hidden="true"></div>
+        <!-- Cadenas -->
+        <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="11" width="16" height="10" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </symbol>
 
-    <div class="plane" id="plane">✈</div>
+        <!-- Œil (afficher/masquer) -->
+        <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z" />
+            <circle cx="12" cy="12" r="3" />
+        </symbol>
+        <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a20.31 20.31 0 0 1 5.06-5.94" />
+            <path d="M1 1l22 22" />
+            <path d="M9.9 4.24C10.59 4.08 11.29 4 12 4c7 0 11 7 11 7a20.3 20.3 0 0 1-3.16 3.95" />
+            <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88" />
+        </symbol>
+    </svg>
 
-<!-- crash visual (simple) -->
-    <div id="crashMark" style="position:absolute; right:240px; top:100px; color:var(--danger); font-weight:900; font-size: 26px; display:none"></div>
-    <div class="mult" id="multiplier">x1.00</div>
-    <div class="status" id="status">Prêt</div>
-    </div>
+    <div class="page active" id="page-login">
+        <main class="login" role="main" aria-label="Écran de connexion">
+            <section class="visual" aria-hidden="true">
+                <svg class="stamp" viewBox="0 0 200 200"><use href="#badge-lock" /></svg>
+            </section>
 
-    <div style="display:flex; align-items:center; justify-content:space-between;">
-    <div id="log" class="log">Appuie sur <span class="kbd">Demarrer</span> pour lancer une manche.</div>
-    <div>
-        
-    <button id="resetBtn" class="small btn-disabled" style="background:transparent;border:1px solid rgba(255,255,255,0.04); color:var(--muted); border-radius:8px">Reset</button>
-    </div>
-</div>
+            <section class="form">
+                <header>
 
-    <div class="wrap" role="application" aria-label="Jeu Avion">
-    <div class="panel" aria-hidden="false">
-    <div class="title">Contrôles</div>
-    <div style="min-width:220px">
-    <div class="meter" aria-hidden="true"><div id="meterFill" class="fill"></div></div>
-    <div class="small">Mise: <span id="uiBet">10</span></div>
-    <div class="small">Potentiel: <span id="potential">10.00</span></div>
-    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 200" width="160" height="100">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="280" height="220">
+                            <defs>
+                                <!-- Dégradé rose/violet comme l’exemple -->
+                                <linearGradient id="zygrad" x1="0" y1="0" x2="1" y2="1">
+                                </linearGradient>
+                            </defs>
 
-    <div class="row">
-        <label for="bet">Mise</label>
-        <input id="bet" placeholder="Ex: 500 MGA" type="number" min="1" step="1" value="" />
-    </div>
+                            <!-- Cercle principal -->
+                            <circle cx="100" cy="94" r="55" fill="url(#zygrad)" />
 
-    <div class="row">
-        <label for="autoCash">Auto-cashout</label>
-        <input id="autoCash" placeholder="Ex: 2.21" type="number" min="1.1" step="0.1" value="" />
-    </div>
+                            <path d="M65 70 H120 L80 110 L120 130"
+                                stroke="#ff2975"
+                                stroke-width="14"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                fill="none" />
+                        </svg>
 
-    <div class="row">
-        <label for="autoPlay">Auto-play</label>
-        <input id="autoPlay" type="checkbox" />
-        <span class="small" style="margin-left:auto">Auto start next round</span>
-    </div>
+                        <!-- Text -->
+                        <g transform="translate(170,115)">
+                            <text x="0" y="0" font-family="Poppins, Arial, sans-serif"
+                                font-size="60" font-weight="700" fill="#e8e8e8" letter-spacing="2">
+                                yxel
+                            </text>
+                            <text x="2" y="32" font-size="15" fill="#c0c0c0"
+                                font-family="Poppins, Arial, sans-serif">
+                                WiFi•Access Zone
+                            </text>
+                        </g>
+                    </svg>
+                    <div class="sub">
+                        Entrez les identifiants pour se connecter
+                    </div>
+                </header>
 
-    <div style="display:flex; gap:8px; margin-top:10px;">
-    <button id="startBtn" class="btn-start">Démarrer</button>
-    <button id="cashBtn" class="btn-cash btn-disabled" disabled>Cash Out</button>
-    </div>
+                <label class="field" for="email">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user" /></svg>
+                    <input id="email" type="email" placeholder="Adress email" autocomplete="email" required>
+                </label>
 
-    <div style="margin-top:12px;">
-    <div class="small">Dernier résultat :</div>
-    <div id="lastResult" class="log">—</div>
-    </div>
-</div>
+                <label class="field" for="password">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lock" /></svg>
+                    <input id="password" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+                </button>
+            </label>
 
-<!-- Notification (cachée par défaut) -->
-    <div class="notification" id="downloadNotification">📞
-    <div class="notification-text">
-        <h5>Pour plus d'info <span>whats up:</span></h5>
-        <z>+261347105558</z>
-    </div>
-</div>
-</div>
+            <center><button class="btn" id="submit" type="button">
+                <svg class="icon" viewBox="0 0 24 24" style="margin-right:8px;vertical-align:middle"><use href="#i-login" /></svg>
+                Connexion</button></center>
+            <div class="contact">
+                <h1>INFOLINE : <span>+261 34 56 763 35</span> </h1>
+            </div>
+        </section>
+    </main>
 
-    <script>
-
-const balanceEl = document.getElementById('balance');
-const betInput = document.getElementById('bet');
-const autoCashInput = document.getElementById('autoCash');
-const startBtn = document.getElementById('startBtn');
-const cashBtn = document.getElementById('cashBtn');
-const multiplierEl = document.getElementById('multiplier');
-const statusEl = document.getElementById('status');
-const uiBet = document.getElementById('uiBet');
-const potentialEl = document.getElementById('potential');
-const meterFill = document.getElementById('meterFill');
-const plane = document.getElementById('plane');
-const trail = document.getElementById('trail');
-const lastResult = document.getElementById('lastResult');
-const autoPlayCheckbox = document.getElementById('autoPlay');
-const crashMark = document.getElementById('crashMark');
-
-let balance = 5000.00;
-let currentBet = 10;
-let gameRunning = false;
-let multiplier = 1.0;
-let rafId = null;
-let round = 0;
-let cashedOut = false;
-let currentPayout = 0;
-let waitingForMultiplier = false;
-let multiplierStartedAt = 0;
-let crashAtTime = 0;
-let autoCash = parseFloat(autoCashInput.value) || null;
-let autoPlay = false;
-
-function format(n){ return Number(n).toFixed(2); }
-function setBalance(v){ balance = Math.max(0, Number(v)); balanceEl.textContent = format(balance); }
-setBalance(balance);
-uiBet.textContent = betInput.value;
-potentialEl.textContent = format(Number(betInput.value)*1.00);
-
-function updateUI(){
-  uiBet.textContent = betInput.value;
-  potentialEl.textContent = format(Number(betInput.value) * (parseFloat(multiplier).toFixed(2) || 1));
-  document.getElementById('uiBet').textContent = betInput.value;
-}
-
-betInput.addEventListener('input', ()=> { updateUI() });
-autoCashInput.addEventListener('input', ()=> { autoCash = parseFloat(autoCashInput.value) || null; });
-
-startBtn.addEventListener('click', startRound);
-cashBtn.addEventListener('click', cashOut);
-
-document.getElementById('resetBtn').addEventListener('click', ()=>{
-  setBalance(5000);
-  lastResult.textContent = 'Remis à zéro.';
-});
-
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter'){ startRound(); }
-  if(e.code === 'Space'){ e.preventDefault(); cashOut(); }
-  if(e.key === 'ArrowUp'){ betInput.value = Math.max(1, Number(betInput.value) + 1); updateUI(); }
-  if(e.key === 'ArrowDown'){ betInput.value = Math.max(1, Number(betInput.value) - 1); updateUI(); }
-});
-
-function startRound(){
-  if(gameRunning || waitingForMultiplier) return;
-  currentBet = Number(betInput.value) || 0;
-  if(currentBet <= 0){ alert('Mise invalide'); return; }
-  if(currentBet > balance){ alert('Balance insuffisante'); return; }
-
-  // prepare round
-  round++;
-  cashedOut = false;
-  multiplier = 1.0;
-  currentPayout = 0;
-  setBalance(+(balance - currentBet));
-  statusEl.textContent = 'Décollage...';
-  multiplierEl.textContent = `x${multiplier.toFixed(2)}`;
-  lastResult.textContent = `Manche #${round} — avion décollé. Multiplicateur démarre dans 5s.`;
-  meterFill.style.width = '0%';
-  crashMark.style.display = 'none';
-
-  // show plane takeoff animation
-  plane.classList.remove('crashed');
-  void plane.offsetWidth;
-  plane.classList.add('taking-off');
-  trail.style.width = '0px';
-  setTimeout(()=> { trail.style.width = '180px'; }, 120);
-
-  // after plane takes off we wait 5s before multiplier begins
-  waitingForMultiplier = true;
-  gameRunning = false;
-  startBtn.classList.add('btn-disabled');
-  startBtn.disabled = true;
-  cashBtn.classList.add('btn-disabled'); cashBtn.disabled = true;
-
-  let countdown = 5;
-  let countdownInterval = setInterval(()=> {
-    statusEl.textContent = `Démarrage du multiplicateur dans ${countdown}s`;
-    countdown--;
-    if(countdown < 0){
-      clearInterval(countdownInterval);
-      waitingForMultiplier = false;
-      beginMultiplier();
-    }
-  }, 1000);
-}
-
-/* démarre la boucle qui augmente le multiplicateur */
-function beginMultiplier(){
-  if(gameRunning) return;
-  gameRunning = true;
-  multiplierStartedAt = performance.now();
-  // crash time en secondes après le début du multiplicateur (aléatoire)
-  // min 1.1s -> max 12s (ajuste si tu veux)
-  const crashSeconds = (Math.random() * 10.5) + 1.1;
-  crashAtTime = multiplierStartedAt + crashSeconds * 1000;
-
-  // croissance : on utilisera une exponentielle contrôlée
-  // multiplier(t) = 1 + (e^(rate * t) - 1) * scale
-  const rate = 0.6; // vitesse de montée
-  const scale = 1.2;
-
-  statusEl.textContent = 'En vol — multiplicateur en cours';
-  startBtn.classList.add('btn-disabled');
-  startBtn.disabled = true;
-  cashBtn.classList.remove('btn-disabled'); cashBtn.disabled = false;
-
-  // animation loop
-  function loop(now){
-    const elapsed = (now - multiplierStartedAt) / 6000; // sec
-    // expo growth for ressenti similaire à Aviator
-    multiplier = Math.max(1.0, 1 + (Math.exp(rate * elapsed) - 1) * scale);
-    // clamp display
-    if(!isFinite(multiplier) || multiplier > 1000) multiplier = 1000;
-
-    multiplierEl.textContent = `x${multiplier.toFixed(2)}`;
-
-    // meter fill - relative to potential of crashSeconds / 12s (visuel)
-    let fillPct = Math.min(100, ((now - multiplierStartedAt) / (12*1000)) * 100);
-    meterFill.style.width = fillPct + '%';
-
-    // auto cashout check
-    if(!cashedOut && autoCash && multiplier >= autoCash){
-      cashOut(true);
-      // don't return here, allow instant cashout to stop before bust
-    }
-
-    // crash check
-    if(now >= crashAtTime){
-      // bust: plane crash
-      gameRunning = false;
-      cashedOut = false;
-      cancelAnimationFrame(rafId);
-      rafId = null;
-      onBust();
-      return;
-    }
-
-    // continue loop
-    rafId = requestAnimationFrame(loop);
-  }
-
-  rafId = requestAnimationFrame(loop);
-}
-
-/* cash out function */
-function cashOut(isAuto=false){
-  if(!gameRunning) return;
-  if(cashedOut) return;
-  cashedOut = true;
-  gameRunning = false;
-  cancelAnimationFrame(rafId);
-  rafId = null;
-
-  // calculate payout (truncate to 2 decimals)
-  const payout = Math.max(0, +(currentBet * multiplier).toFixed(2));
-  currentPayout = payout;
-  setBalance(+(balance + payout)); // ajoute payout à la balance
-  multiplierEl.textContent = `x${multiplier.toFixed(2)}`;
-  statusEl.innerHTML = `<span class="msg-ok">CASHOUT x${multiplier.toFixed(2)}</span>`;
-  lastResult.textContent = `Gagné ${format(payout)} (mise ${format(currentBet)}) — round #${round}`;
-  cashBtn.classList.add('btn-disabled'); cashBtn.disabled = true;
-
-  // plane stays in air then slowly reset
-  plane.classList.remove('taking-off');
-  setTimeout(()=> { plane.style.opacity = '1'; }, 200);
-
-  // auto-play
-  if(autoPlayCheckbox.checked){
-    setTimeout(()=> {
-      // reset plane visuals and start next round
-      plane.classList.remove('crashed');
-      plane.style.opacity = '';
-      startBtn.disabled = false;
-      startBtn.classList.remove('btn-disabled');
-      startRound();
-    }, 1200);
-  } else {
-    startBtn.disabled = false;
-    startBtn.classList.remove('btn-disabled');
-  }
-}
-
-/* bust (crash) handler */
-function onBust(){
-  multiplierEl.textContent = `x${multiplier.toFixed(2)}`;
-  statusEl.innerHTML = `<span class="msg-bust">💥Crash</span>`;
-  lastResult.textContent = `Perdu ${format(currentBet)} (mise) — round #${round}`;
-  crashMark.style.display = 'block';
-  plane.classList.remove('taking-off');
-  plane.classList.add('crashed');
-
-  // cash button disabled
-  cashBtn.classList.add('btn-disabled'); cashBtn.disabled = true;
-
-  // auto-play restart?
-  if(autoPlayCheckbox.checked){
-    setTimeout(()=> {
-      // small reset visual
-      plane.classList.remove('crashed');
-      crashMark.style.display = 'none';
-      startBtn.disabled = false;
-      startBtn.classList.remove('btn-disabled');
-      startRound();
-    }, 1800);
-  } else {
-    startBtn.disabled = false;
-    startBtn.classList.remove('btn-disabled');
-  }
-}
-
-/* util */
-function format(n){ return Number(n).toFixed(2); }
-function setBalance(v){ balance = Number(v); balanceEl.textContent = format(balance); }
-function updateBetUI(){ uiBet.textContent = betInput.value; potentialEl.textContent = format(Number(betInput.value) * Number(multiplier || 1).toFixed(2)); }
-betInput.addEventListener('change', updateBetUI);
-
-/* initial UI */
-updateUI();
-setBalance(balance);
-
-    </script>
 </body>
-</html>
+               </html>
